@@ -9,6 +9,6 @@ output "name" {
 }
 
 output "execution_role_arn" {
-  value       = element(concat(aws_iam_role.compute_queue_backlog.*.arn, list("")), 0)
+  value       = element(concat(aws_iam_role.compute_queue_backlog.*.arn, [""]), 0)
   description = "This is the ARN for the execution role that was created for the lambda. It will be empty if you supplied your own."
 }
