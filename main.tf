@@ -43,13 +43,7 @@ resource "aws_cloudwatch_event_target" "compute_queue_backlog" {
   rule      = aws_cloudwatch_event_rule.compute_queue_backlog.name
   target_id = "${data.aws_lambda_function.compute_queue_backlog.function_name}-${var.service_name}"
   arn       = data.aws_lambda_function.compute_queue_backlog.arn
-  input     = data.template_file.compute_queue_backlog.rendered
-}
-
-data "template_file" "compute_queue_backlog" {
-  template = "${file("${path.module}/files/cw_event_target_args.json.tpl")}"
-
-  vars = {
+  input     = templatefile("${path.module}/files/cw_event_target_args.json.tpl", {
     cluster_name               = var.cluster_name
     service_name               = var.service_name
     metric_provider            = var.metric_provider
@@ -59,7 +53,7 @@ data "template_file" "compute_queue_backlog" {
     queue_name                 = var.queue_name
     queue_owner_aws_account_id = var.queue_owner_aws_account_id != "" ? var.queue_owner_aws_account_id : data.aws_caller_identity.current.account_id
     est_msgs_per_sec           = var.service_est_msgs_per_sec
-  }
+  })
 }
 
 resource "aws_lambda_permission" "compute_queue_backlog" {
